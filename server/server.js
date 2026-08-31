@@ -36,10 +36,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error.' });
 });
 
-initDatabase();
+async function start() {
+  await initDatabase();
+  app.listen(PORT, () => {
+    console.log(`\n  Cabiao SHS Lab Inventory System`);
+    console.log(`  Server running at http://localhost:${PORT}`);
+    console.log(`  Admin: admin@chs.edu.ph / admin123\n`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`\n  Cabiao SHS Lab Inventory System`);
-  console.log(`  Server running at http://localhost:${PORT}`);
-  console.log(`  Admin: admin@chs.edu.ph / admin123\n`);
+start().catch(err => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cabiao SHS - Lab Inventory System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="/js/api.js"></script>
@@ -12,66 +12,88 @@
 </head>
 <body x-data="mainApp()" x-init="init()">
 
-  <!-- Toast Container -->
-  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+  <div id="toast-container"></div>
 
-  <!-- Login Page -->
+  <!-- ==================== LOGIN ==================== -->
   <template x-if="!loggedIn">
     <div class="login-page">
-      <div class="login-card card">
-        <div class="login-logo">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto;color:var(--primary)">
-            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-          </svg>
-          <h1>Cabiao Senior High School</h1>
-          <small>Computer Laboratory Inventory System</small>
-        </div>
-
-        <div x-show="loginError" class="login-error" x-text="loginError"></div>
-
-        <form @submit.prevent="login()">
-          <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="email" class="input" x-model="loginEmail" placeholder="admin@chs.edu.ph" required>
+      <div class="login-container">
+        <div class="login-card">
+          <div class="login-header">
+            <div class="login-logo">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+              </svg>
+            </div>
+            <h1 class="login-title">Cabiao Senior High School</h1>
+            <p class="login-subtitle">Computer Laboratory Inventory System</p>
           </div>
-          <div class="form-group">
-            <label class="form-label">Password</label>
-            <input type="password" class="input" x-model="loginPassword" placeholder="Enter password" required>
-          </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:0.5rem" :disabled="loginLoading">
-            <span x-show="!loginLoading">Sign In</span>
-            <span x-show="loginLoading">Signing in...</span>
-          </button>
-        </form>
 
-        <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--gray-200);font-size:0.75rem;color:var(--gray-500);text-align:center">
-          <p style="margin-bottom:0.25rem"><strong>Demo Accounts:</strong></p>
-          <p>Admin: admin@chs.edu.ph / admin123</p>
-          <p>Custodian: custodian@chs.edu.ph / custodian123</p>
-          <p>Technician: tech@chs.edu.ph / tech123</p>
+          <div x-show="loginError" class="login-error" x-text="loginError"></div>
+
+          <form class="login-form" @submit.prevent="login()">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="input" x-model="loginEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="input" x-model="loginPassword" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-primary" :disabled="loginLoading">
+              <span x-show="!loginLoading">Sign In to Dashboard</span>
+              <span x-show="loginLoading">Authenticating...</span>
+            </button>
+          </form>
+
+          <div class="login-divider"><span>Demo Accounts</span></div>
+
+          <div class="login-demo">
+            <p><strong>System Admin:</strong> admin@chs.edu.ph / admin123</p>
+            <p><strong>Custodian:</strong> custodian@chs.edu.ph / custodian123</p>
+            <p><strong>Technician:</strong> tech@chs.edu.ph / tech123</p>
+          </div>
         </div>
       </div>
     </div>
   </template>
 
-  <!-- Main App -->
+  <!-- ==================== MAIN APP ==================== -->
   <template x-if="loggedIn">
     <div class="flex">
+
       <!-- Sidebar -->
       <aside class="sidebar" :class="{'open': sidebarOpen}">
         <div class="sidebar-header">
-          <h2>Lab Inventory</h2>
-          <small>Cabiao Senior High School</small>
+          <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+            <div>
+              <h2>Lab Inventory</h2>
+              <small>Cabiao SHS</small>
+            </div>
+          </div>
         </div>
+
         <nav class="sidebar-nav">
+          <div class="nav-section">Main</div>
           <div class="nav-item" :class="{'active': currentPage === 'dashboard'}" @click="navigate('dashboard')">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             Dashboard
           </div>
+
+          <div class="nav-section">Inventory</div>
           <div class="nav-item" :class="{'active': currentPage === 'equipment'}" @click="navigate('equipment')">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
             Equipment
           </div>
+          <div class="nav-item" :class="{'active': currentPage === 'labs'}" @click="navigate('labs')">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M13 21V3l6 4v14"/></svg>
+            Laboratories
+          </div>
+
+          <div class="nav-section">Maintenance</div>
           <div class="nav-item" :class="{'active': currentPage === 'tickets'}" @click="navigate('tickets')">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             Maintenance Tickets
@@ -80,20 +102,20 @@
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
             Maintenance Logs
           </div>
-          <div class="nav-item" :class="{'active': currentPage === 'labs'}" @click="navigate('labs')">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M13 21V3l6 4v14"/></svg>
-            Laboratories
-          </div>
         </nav>
-        <div style="padding:0.75rem 1rem;border-top:1px solid var(--gray-700)">
-          <div class="flex items-center gap-2" style="margin-bottom:0.5rem">
-            <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:white;font-size:0.75rem;font-weight:600" x-text="user?.full_name?.charAt(0) || 'U'"></div>
-            <div>
-              <div style="font-size:0.8rem;color:white" x-text="user?.full_name"></div>
-              <div style="font-size:0.65rem;color:var(--gray-400);text-transform:capitalize" x-text="user?.role"></div>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <div class="sidebar-avatar" x-text="user?.full_name?.charAt(0) || 'U'"></div>
+            <div class="sidebar-user-info">
+              <div class="sidebar-user-name" x-text="user?.full_name"></div>
+              <div class="sidebar-user-role" x-text="user?.role"></div>
             </div>
           </div>
-          <button class="btn btn-ghost btn-sm" style="width:100%;color:var(--gray-400)" @click="logout()">Sign Out</button>
+          <button class="btn btn-ghost btn-sm" style="width:100%;color:rgba(255,255,255,0.5);justify-content:center" @click="logout()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            Sign Out
+          </button>
         </div>
       </aside>
 
@@ -106,47 +128,56 @@
             </button>
             <div>
               <div class="page-title" x-text="pageTitle"></div>
-              <div class="page-subtitle" x-text="pageSubtitle"></div>
+              <div class="page-subtitle">Cabiao Senior High School</div>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="badge" :class="'badge-' + user?.role" x-text="user?.role" style="text-transform:capitalize"></span>
+          <div class="flex items-center gap-3">
+            <span class="badge" :class="'badge-' + user?.role" x-text="user?.role" style="text-transform:capitalize;padding:0.3rem 0.75rem;font-size:0.75rem"></span>
           </div>
         </div>
 
         <div class="page-content">
-          <!-- Dashboard -->
+
+          <!-- ==================== DASHBOARD ==================== -->
           <div x-show="currentPage === 'dashboard'" x-data="dashboardPage()" x-init="load()">
             <div class="grid grid-4 mb-6">
-              <div class="card stat-card">
+              <div class="card stat-card primary">
                 <div class="stat-value" x-text="stats.total || 0"></div>
                 <div class="stat-label">Total Assets</div>
+                <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
               </div>
-              <div class="card stat-card">
-                <div class="stat-value" style="color:var(--success)" x-text="stats.working || 0"></div>
+              <div class="card stat-card success">
+                <div class="stat-value" x-text="stats.working || 0"></div>
                 <div class="stat-label">Working Units</div>
+                <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
               </div>
-              <div class="card stat-card">
-                <div class="stat-value" style="color:var(--warning)" x-text="stats.maintenance || 0"></div>
+              <div class="card stat-card warning">
+                <div class="stat-value" x-text="stats.maintenance || 0"></div>
                 <div class="stat-label">Under Maintenance</div>
+                <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
               </div>
-              <div class="card stat-card">
-                <div class="stat-value" style="color:var(--danger)" x-text="stats.defective || 0"></div>
+              <div class="card stat-card danger">
+                <div class="stat-value" x-text="stats.defective || 0"></div>
                 <div class="stat-label">Defective Units</div>
+                <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
               </div>
             </div>
 
             <div class="grid grid-2 mb-6">
               <div class="card">
-                <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--gray-200);font-weight:600">Equipment by Laboratory</div>
-                <div style="padding:1rem 1.25rem">
+                <div class="section-header">
+                  <h4>Equipment by Laboratory</h4>
+                </div>
+                <div class="section-body">
                   <template x-for="lab in stats.byLab || []" :key="lab.name">
-                    <div class="flex items-center justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--gray-100)">
-                      <span class="text-sm" x-text="lab.name"></span>
+                    <div class="flex items-center justify-between" style="padding:0.625rem 0;border-bottom:1px solid #f0f0f0">
+                      <div>
+                        <div class="text-sm font-bold" x-text="lab.name"></div>
+                        <div class="text-xs text-gray" x-text="lab.count + ' total units'"></div>
+                      </div>
                       <div class="flex gap-2 items-center">
-                        <span class="badge badge-working" x-text="lab.working + ' working'"></span>
-                        <span class="badge badge-defective" x-text="lab.defective + ' defective'" x-show="lab.defective > 0"></span>
-                        <span class="text-sm font-bold" x-text="lab.count"></span>
+                        <span class="badge badge-working" x-text="lab.working + ' ok'"></span>
+                        <span class="badge badge-defective" x-text="lab.defective + ' bad'" x-show="lab.defective > 0"></span>
                       </div>
                     </div>
                   </template>
@@ -154,10 +185,12 @@
               </div>
 
               <div class="card">
-                <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--gray-200);font-weight:600">Equipment by Category</div>
-                <div style="padding:1rem 1.25rem">
+                <div class="section-header">
+                  <h4>Equipment by Category</h4>
+                </div>
+                <div class="section-body">
                   <template x-for="cat in stats.byCategory || []" :key="cat.name">
-                    <div class="flex items-center justify-between" style="padding:0.5rem 0;border-bottom:1px solid var(--gray-100)">
+                    <div class="flex items-center justify-between" style="padding:0.625rem 0;border-bottom:1px solid #f0f0f0">
                       <span class="text-sm" x-text="cat.name"></span>
                       <span class="text-sm font-bold" x-text="cat.count"></span>
                     </div>
@@ -167,8 +200,8 @@
             </div>
 
             <div class="card">
-              <div class="flex items-center justify-between" style="padding:1rem 1.25rem;border-bottom:1px solid var(--gray-200)">
-                <span style="font-weight:600">Recent Maintenance Tickets</span>
+              <div class="section-header">
+                <h4>Recent Maintenance Tickets</h4>
                 <button class="btn btn-outline btn-sm" @click="$store.app.navigate('tickets')">View All</button>
               </div>
               <div class="table-container">
@@ -200,29 +233,38 @@
             </div>
           </div>
 
-          <!-- Equipment Page -->
-          <div x-show="currentPage === 'equipment'" x-data="equipmentPage()" x-init="load()">
+          <!-- ==================== EQUIPMENT ==================== -->
+          <div x-show="currentPage === 'equipment'" x-data="equipmentPage()" x-init="initPage()">
             <div class="flex items-center justify-between mb-4">
-              <div class="flex gap-2">
-                <select class="select" style="width:150px" x-model="filterLab" @change="load()">
+              <div class="filter-bar">
+                <select class="select" x-model="filterLab" @change="load()">
                   <option value="">All Laboratories</option>
                   <template x-for="l in labs" :key="l.id">
                     <option :value="l.id" x-text="l.name"></option>
                   </template>
                 </select>
-                <select class="select" style="width:150px" x-model="filterStatus" @change="load()">
+                <select class="select" x-model="filterStatus" @change="load()">
                   <option value="">All Status</option>
                   <option value="working">Working</option>
                   <option value="under_maintenance">Under Maintenance</option>
                   <option value="defective">Defective</option>
                   <option value="condemned">Condemned</option>
                 </select>
-                <input type="text" class="input" style="width:200px" placeholder="Search..." x-model="searchQuery" @keyup.enter="load()">
+                <input type="text" class="input" style="width:200px" placeholder="Search assets..." x-model="searchQuery" @keyup.enter="load()">
               </div>
               <div class="flex gap-2">
-                <button class="btn btn-outline btn-sm" @click="exportCSV()">Export CSV</button>
-                <button class="btn btn-outline btn-sm" @click="exportPDF()">Export PDF</button>
-                <button class="btn btn-primary btn-sm" @click="showAddModal = true" x-show="user?.role === 'admin' || user?.role === 'custodian'">+ Add Equipment</button>
+                <button class="btn btn-outline btn-sm" @click="exportCSV()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  CSV
+                </button>
+                <button class="btn btn-outline btn-sm" @click="exportPDF()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  PDF
+                </button>
+                <button class="btn btn-primary btn-sm" @click="resetForm(); showAddModal = true" x-show="user?.role === 'admin' || user?.role === 'custodian'">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add Equipment
+                </button>
               </div>
             </div>
 
@@ -233,7 +275,7 @@
                     <tr>
                       <th>Asset Tag</th>
                       <th>Category</th>
-                      <th>Brand/Model</th>
+                      <th>Brand / Model</th>
                       <th>Laboratory</th>
                       <th>Status</th>
                       <th>Date Acquired</th>
@@ -248,7 +290,7 @@
                         <td><span x-text="item.brand"></span> <span class="text-gray" x-text="item.model"></span></td>
                         <td x-text="item.lab_name || '-'"></td>
                         <td><span class="badge" :class="'badge-' + item.status" x-text="item.status.replace('_',' ')"></span></td>
-                        <td x-text="formatDate(item.date_acquired)"></td>
+                        <td class="text-gray" x-text="formatDate(item.date_acquired)"></td>
                         <td>
                           <div class="flex gap-2">
                             <button class="btn btn-ghost btn-sm" @click="viewItem(item)">View</button>
@@ -261,7 +303,10 @@
                   </tbody>
                 </table>
               </div>
-              <div class="flex items-center justify-between" style="padding:0.75rem 1rem;border-top:1px solid var(--gray-200)" x-show="totalPages > 1">
+              <div class="empty-state" x-show="items.length === 0">
+                <p>No equipment found</p>
+              </div>
+              <div class="flex items-center justify-between" style="padding:0.75rem 1rem;border-top:1px solid var(--border)" x-show="totalPages > 1">
                 <span class="text-sm text-gray">Page <span x-text="currentPageNum"></span> of <span x-text="totalPages"></span></span>
                 <div class="flex gap-2">
                   <button class="btn btn-outline btn-sm" :disabled="currentPageNum <= 1" @click="currentPageNum--; load()">Prev</button>
@@ -270,40 +315,40 @@
               </div>
             </div>
 
-            <!-- View Detail Modal -->
+            <!-- View Equipment Modal -->
             <div class="modal-overlay" x-show="showViewModal" @click.self="showViewModal = false" x-transition>
               <div class="modal" style="max-width:640px">
                 <div class="modal-header">
                   <h3 x-text="viewingItem?.asset_tag || 'Equipment Details'"></h3>
-                  <button class="btn btn-ghost btn-sm" @click="showViewModal = false">&times;</button>
+                  <button class="btn btn-ghost btn-sm" @click="showViewModal = false" style="font-size:1.25rem">&times;</button>
                 </div>
                 <div class="modal-body" x-show="viewingItem">
-                  <div class="grid grid-2" style="gap:0.75rem">
-                    <div><span class="text-xs text-gray">Serial Number</span><div class="text-sm" x-text="viewingItem?.serial_number || '-'"></div></div>
-                    <div><span class="text-xs text-gray">Category</span><div class="text-sm" x-text="viewingItem?.category_name || '-'"></div></div>
-                    <div><span class="text-xs text-gray">Brand</span><div class="text-sm" x-text="viewingItem?.brand || '-'"></div></div>
-                    <div><span class="text-xs text-gray">Model</span><div class="text-sm" x-text="viewingItem?.model || '-'"></div></div>
-                    <div><span class="text-xs text-gray">Laboratory</span><div class="text-sm" x-text="viewingItem?.lab_name || '-'"></div></div>
-                    <div><span class="text-xs text-gray">Status</span><div><span class="badge" :class="'badge-' + viewingItem?.status" x-text="viewingItem?.status?.replace('_',' ')"></span></div></div>
-                    <div><span class="text-xs text-gray">Date Acquired</span><div class="text-sm" x-text="formatDate(viewingItem?.date_acquired)"></div></div>
-                    <div><span class="text-xs text-gray">Unit Cost</span><div class="text-sm" x-text="formatCurrency(viewingItem?.unit_cost)"></div></div>
+                  <div class="grid grid-2" style="gap:1rem">
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Serial Number</span><div class="text-sm mt-2" x-text="viewingItem?.serial_number || '-'"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Category</span><div class="text-sm mt-2" x-text="viewingItem?.category_name || '-'"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Brand</span><div class="text-sm mt-2" x-text="viewingItem?.brand || '-'"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Model</span><div class="text-sm mt-2" x-text="viewingItem?.model || '-'"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Laboratory</span><div class="text-sm mt-2" x-text="viewingItem?.lab_name || '-'"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Status</span><div class="mt-2"><span class="badge" :class="'badge-' + viewingItem?.status" x-text="viewingItem?.status?.replace('_',' ')"></span></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Date Acquired</span><div class="text-sm mt-2" x-text="formatDate(viewingItem?.date_acquired)"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Unit Cost</span><div class="text-sm mt-2" x-text="formatCurrency(viewingItem?.unit_cost)"></div></div>
                   </div>
-                  <div style="margin-top:0.75rem"><span class="text-xs text-gray">Specifications</span><div class="text-sm" x-text="viewingItem?.specifications || '-'"></div></div>
-                  <div style="margin-top:0.75rem"><span class="text-xs text-gray">Remarks</span><div class="text-sm" x-text="viewingItem?.remarks || '-'"></div></div>
+                  <div style="margin-top:1rem"><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Specifications</span><div class="text-sm mt-2" x-text="viewingItem?.specifications || '-'"></div></div>
+                  <div style="margin-top:0.75rem"><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Remarks</span><div class="text-sm mt-2" x-text="viewingItem?.remarks || '-'"></div></div>
 
-                  <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--gray-200)">
-                    <h4 style="font-weight:600;margin-bottom:0.5rem">Maintenance History</h4>
+                  <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+                    <h4 style="font-weight:700;margin-bottom:0.75rem;font-size:0.875rem">Maintenance History</h4>
                     <template x-for="log in viewingItem?.maintenance_logs || []" :key="log.id">
-                      <div style="padding:0.5rem 0;border-bottom:1px solid var(--gray-100);font-size:0.8rem">
+                      <div style="padding:0.75rem;margin-bottom:0.5rem;border:1px solid var(--border);border-radius:var(--radius);font-size:0.8125rem">
                         <div class="flex items-center justify-between">
                           <span class="badge" style="text-transform:capitalize" x-text="log.maintenance_type"></span>
                           <span class="text-gray text-xs" x-text="formatDate(log.maintenance_date)"></span>
                         </div>
-                        <div class="mt-2" x-text="log.description"></div>
-                        <div class="text-gray text-xs mt-2" x-show="log.parts_replaced">Parts: <span x-text="log.parts_replaced"></span></div>
+                        <div style="margin-top:0.5rem" x-text="log.description"></div>
+                        <div class="text-gray text-xs" style="margin-top:0.375rem" x-show="log.parts_replaced">Parts: <span x-text="log.parts_replaced"></span></div>
                       </div>
                     </template>
-                    <div class="empty-state" x-show="!viewingItem?.maintenance_logs?.length" style="padding:1rem">
+                    <div class="empty-state" x-show="!viewingItem?.maintenance_logs?.length" style="padding:1.5rem">
                       <p>No maintenance records</p>
                     </div>
                   </div>
@@ -311,12 +356,12 @@
               </div>
             </div>
 
-            <!-- Add/Edit Modal -->
+            <!-- Add/Edit Equipment Modal -->
             <div class="modal-overlay" x-show="showAddModal || showEditModal" @click.self="showAddModal = false; showEditModal = false" x-transition>
-              <div class="modal">
+              <div class="modal" style="max-width:640px">
                 <div class="modal-header">
-                  <h3 x-text="showEditModal ? 'Edit Equipment' : 'Add Equipment'"></h3>
-                  <button class="btn btn-ghost btn-sm" @click="showAddModal = false; showEditModal = false">&times;</button>
+                  <h3 x-text="showEditModal ? 'Edit Equipment' : 'Add New Equipment'"></h3>
+                  <button class="btn btn-ghost btn-sm" @click="showAddModal = false; showEditModal = false" style="font-size:1.25rem">&times;</button>
                 </div>
                 <div class="modal-body">
                   <div class="grid grid-2">
@@ -331,7 +376,7 @@
                     <div class="form-group">
                       <label class="form-label">Category</label>
                       <select class="select" x-model="form.category_id">
-                        <option value="">Select...</option>
+                        <option value="">Select category</option>
                         <template x-for="c in categories" :key="c.id">
                           <option :value="c.id" x-text="c.name"></option>
                         </template>
@@ -340,7 +385,7 @@
                     <div class="form-group">
                       <label class="form-label">Laboratory</label>
                       <select class="select" x-model="form.laboratory_id">
-                        <option value="">Select...</option>
+                        <option value="">Select laboratory</option>
                         <template x-for="l in labs" :key="l.id">
                           <option :value="l.id" x-text="l.name"></option>
                         </template>
@@ -372,7 +417,7 @@
                       <input type="date" class="input" x-model="form.date_acquired">
                     </div>
                     <div class="form-group">
-                      <label class="form-label">Unit Cost (₱)</label>
+                      <label class="form-label">Unit Cost (P)</label>
                       <input type="number" class="input" x-model="form.unit_cost" step="0.01">
                     </div>
                     <div class="form-group">
@@ -384,7 +429,7 @@
                 <div class="modal-footer">
                   <button class="btn btn-outline" @click="showAddModal = false; showEditModal = false">Cancel</button>
                   <button class="btn btn-primary" @click="saveItem()" :disabled="saving">
-                    <span x-show="!saving" x-text="showEditModal ? 'Update' : 'Add Equipment'"></span>
+                    <span x-show="!saving" x-text="showEditModal ? 'Update Equipment' : 'Add Equipment'"></span>
                     <span x-show="saving">Saving...</span>
                   </button>
                 </div>
@@ -392,18 +437,18 @@
             </div>
           </div>
 
-          <!-- Tickets Page -->
-          <div x-show="currentPage === 'tickets'" x-data="ticketsPage()" x-init="load()">
+          <!-- ==================== TICKETS ==================== -->
+          <div x-show="currentPage === 'tickets'" x-data="ticketsPage()" x-init="initPage()">
             <div class="flex items-center justify-between mb-4">
-              <div class="flex gap-2">
-                <select class="select" style="width:140px" x-model="filterStatus" @change="load()">
+              <div class="filter-bar">
+                <select class="select" x-model="filterStatus" @change="load()">
                   <option value="">All Status</option>
                   <option value="pending">Pending</option>
                   <option value="in_progress">In Progress</option>
                   <option value="resolved">Resolved</option>
                   <option value="unrepairable">Unrepairable</option>
                 </select>
-                <select class="select" style="width:140px" x-model="filterPriority" @change="load()">
+                <select class="select" x-model="filterPriority" @change="load()">
                   <option value="">All Priority</option>
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -411,7 +456,10 @@
                   <option value="critical">Critical</option>
                 </select>
               </div>
-              <button class="btn btn-primary btn-sm" @click="showAddModal = true" x-show="user?.role === 'custodian'">+ New Ticket</button>
+              <button class="btn btn-primary btn-sm" @click="showAddModal = true" x-show="user?.role === 'custodian'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Ticket
+              </button>
             </div>
 
             <div class="card">
@@ -435,12 +483,12 @@
                       <tr>
                         <td class="font-bold" x-text="t.ticket_number"></td>
                         <td x-text="t.title"></td>
-                        <td x-text="t.asset_tag || '-'"></td>
+                        <td x-text="t.asset_tag || 'General'"></td>
                         <td x-text="t.lab_name || '-'"></td>
                         <td><span class="badge" :class="'badge-' + t.priority" x-text="t.priority"></span></td>
                         <td><span class="badge" :class="'badge-' + t.status" x-text="t.status.replace('_',' ')"></span></td>
                         <td x-text="t.technician_name || 'Unassigned'"></td>
-                        <td x-text="formatDate(t.created_at)"></td>
+                        <td class="text-gray" x-text="formatDate(t.created_at)"></td>
                         <td>
                           <div class="flex gap-2">
                             <button class="btn btn-ghost btn-sm" @click="viewTicket(t)">View</button>
@@ -462,33 +510,33 @@
               <div class="modal" style="max-width:640px">
                 <div class="modal-header">
                   <h3 x-text="viewingItem?.ticket_number || 'Ticket Details'"></h3>
-                  <button class="btn btn-ghost btn-sm" @click="showViewModal = false">&times;</button>
+                  <button class="btn btn-ghost btn-sm" @click="showViewModal = false" style="font-size:1.25rem">&times;</button>
                 </div>
                 <div class="modal-body" x-show="viewingItem">
                   <div class="flex items-center gap-2 mb-4">
                     <span class="badge" :class="'badge-' + viewingItem?.priority" x-text="viewingItem?.priority"></span>
                     <span class="badge" :class="'badge-' + viewingItem?.status" x-text="viewingItem?.status?.replace('_',' ')"></span>
                   </div>
-                  <div class="grid grid-2" style="gap:0.75rem;margin-bottom:1rem">
-                    <div><span class="text-xs text-gray">Title</span><div class="text-sm font-bold" x-text="viewingItem?.title"></div></div>
-                    <div><span class="text-xs text-gray">Equipment</span><div class="text-sm" x-text="viewingItem?.asset_tag || 'General Issue'"></div></div>
-                    <div><span class="text-xs text-gray">Laboratory</span><div class="text-sm" x-text="viewingItem?.lab_name || '-'"></div></div>
-                    <div><span class="text-xs text-gray">Reported By</span><div class="text-sm" x-text="viewingItem?.reporter_name"></div></div>
-                    <div><span class="text-xs text-gray">Assigned To</span><div class="text-sm" x-text="viewingItem?.technician_name || 'Unassigned'"></div></div>
-                    <div><span class="text-xs text-gray">Created</span><div class="text-sm" x-text="formatDate(viewingItem?.created_at)"></div></div>
+                  <div class="grid grid-2" style="gap:1rem;margin-bottom:1.25rem">
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Title</span><div class="text-sm font-bold mt-2" x-text="viewingItem?.title"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Equipment</span><div class="text-sm mt-2" x-text="viewingItem?.asset_tag || 'General Issue'"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Laboratory</span><div class="text-sm mt-2" x-text="viewingItem?.lab_name || '-'"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Reported By</span><div class="text-sm mt-2" x-text="viewingItem?.reporter_name"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Assigned To</span><div class="text-sm mt-2" x-text="viewingItem?.technician_name || 'Unassigned'"></div></div>
+                    <div><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Created</span><div class="text-sm mt-2" x-text="formatDate(viewingItem?.created_at)"></div></div>
                   </div>
-                  <div style="margin-bottom:1rem"><span class="text-xs text-gray">Description</span><div class="text-sm" x-text="viewingItem?.description"></div></div>
-                  <div x-show="viewingItem?.resolution_notes"><span class="text-xs text-gray">Resolution Notes</span><div class="text-sm" x-text="viewingItem?.resolution_notes"></div></div>
+                  <div style="margin-bottom:1rem"><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Description</span><div class="text-sm mt-2" x-text="viewingItem?.description"></div></div>
+                  <div x-show="viewingItem?.resolution_notes"><span class="text-xs text-gray" style="text-transform:uppercase;letter-spacing:0.05em;font-weight:600">Resolution Notes</span><div class="text-sm mt-2" x-text="viewingItem?.resolution_notes"></div></div>
 
-                  <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--gray-200)" x-show="viewingItem?.logs?.length">
-                    <h4 style="font-weight:600;margin-bottom:0.5rem">Maintenance Logs</h4>
+                  <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)" x-show="viewingItem?.logs?.length">
+                    <h4 style="font-weight:700;margin-bottom:0.75rem;font-size:0.875rem">Maintenance Logs</h4>
                     <template x-for="log in viewingItem?.logs || []" :key="log.id">
-                      <div style="padding:0.5rem 0;border-bottom:1px solid var(--gray-100);font-size:0.8rem">
+                      <div style="padding:0.75rem;margin-bottom:0.5rem;border:1px solid var(--border);border-radius:var(--radius);font-size:0.8125rem">
                         <div class="flex items-center justify-between">
                           <span class="badge" style="text-transform:capitalize" x-text="log.maintenance_type"></span>
                           <span class="text-gray text-xs" x-text="formatDate(log.maintenance_date)"></span>
                         </div>
-                        <div class="mt-2" x-text="log.description"></div>
+                        <div style="margin-top:0.5rem" x-text="log.description"></div>
                       </div>
                     </template>
                   </div>
@@ -496,12 +544,12 @@
               </div>
             </div>
 
-            <!-- Add Ticket Modal -->
+            <!-- Create Ticket Modal -->
             <div class="modal-overlay" x-show="showAddModal" @click.self="showAddModal = false" x-transition>
               <div class="modal">
                 <div class="modal-header">
                   <h3>Report Issue</h3>
-                  <button class="btn btn-ghost btn-sm" @click="showAddModal = false">&times;</button>
+                  <button class="btn btn-ghost btn-sm" @click="showAddModal = false" style="font-size:1.25rem">&times;</button>
                 </div>
                 <div class="modal-body">
                   <div class="form-group">
@@ -549,12 +597,12 @@
               </div>
             </div>
 
-            <!-- Update Ticket Modal (Technician) -->
+            <!-- Update Ticket Modal -->
             <div class="modal-overlay" x-show="showEditModal" @click.self="showEditModal = false" x-transition>
               <div class="modal">
                 <div class="modal-header">
                   <h3>Update Ticket</h3>
-                  <button class="btn btn-ghost btn-sm" @click="showEditModal = false">&times;</button>
+                  <button class="btn btn-ghost btn-sm" @click="showEditModal = false" style="font-size:1.25rem">&times;</button>
                 </div>
                 <div class="modal-body">
                   <div class="grid grid-2">
@@ -590,11 +638,11 @@
             </div>
           </div>
 
-          <!-- Maintenance Logs Page -->
-          <div x-show="currentPage === 'maintenance'" x-data="maintenancePage()" x-init="load()">
+          <!-- ==================== MAINTENANCE LOGS ==================== -->
+          <div x-show="currentPage === 'maintenance'" x-data="maintenancePage()" x-init="initPage()">
             <div class="flex items-center justify-between mb-4">
-              <div class="flex gap-2">
-                <select class="select" style="width:160px" x-model="filterType" @change="load()">
+              <div class="filter-bar">
+                <select class="select" x-model="filterType" @change="load()">
                   <option value="">All Types</option>
                   <option value="repair">Repair</option>
                   <option value="replacement">Replacement</option>
@@ -603,7 +651,10 @@
                   <option value="software_update">Software Update</option>
                 </select>
               </div>
-              <button class="btn btn-primary btn-sm" @click="showAddModal = true" x-show="user?.role === 'technician'">+ Add Log</button>
+              <button class="btn btn-primary btn-sm" @click="showAddModal = true" x-show="user?.role === 'technician'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Log
+              </button>
             </div>
 
             <div class="card">
@@ -623,7 +674,7 @@
                   <tbody>
                     <template x-for="log in items" :key="log.id">
                       <tr>
-                        <td x-text="formatDate(log.maintenance_date)"></td>
+                        <td class="text-gray" x-text="formatDate(log.maintenance_date)"></td>
                         <td class="font-bold" x-text="log.asset_tag || '-'"></td>
                         <td><span class="badge" style="text-transform:capitalize" x-text="log.maintenance_type"></span></td>
                         <td class="truncate" style="max-width:250px" x-text="log.description"></td>
@@ -645,7 +696,7 @@
               <div class="modal">
                 <div class="modal-header">
                   <h3>Add Maintenance Log</h3>
-                  <button class="btn btn-ghost btn-sm" @click="showAddModal = false">&times;</button>
+                  <button class="btn btn-ghost btn-sm" @click="showAddModal = false" style="font-size:1.25rem">&times;</button>
                 </div>
                 <div class="modal-body">
                   <div class="grid grid-2">
@@ -654,12 +705,12 @@
                       <select class="select" x-model="form.equipment_id">
                         <option value="">Select Equipment</option>
                         <template x-for="e in allEquipment" :key="e.id">
-                          <option :value="e.id" x-text="e.asset_tag + ' - ' + e.brand + ' ' + e.model"></option>
+                          <option :value="e.id" x-text="e.asset_tag + ' - ' + e.brand"></option>
                         </template>
                       </select>
                     </div>
                     <div class="form-group">
-                      <label class="form-label">Maintenance Type *</label>
+                      <label class="form-label">Type *</label>
                       <select class="select" x-model="form.maintenance_type">
                         <option value="repair">Repair</option>
                         <option value="replacement">Replacement</option>
@@ -673,7 +724,7 @@
                       <input type="date" class="input" x-model="form.maintenance_date">
                     </div>
                     <div class="form-group">
-                      <label class="form-label">Cost (₱)</label>
+                      <label class="form-label">Cost (P)</label>
                       <input type="number" class="input" x-model="form.cost" step="0.01">
                     </div>
                   </div>
@@ -694,24 +745,26 @@
             </div>
           </div>
 
-          <!-- Labs Page -->
+          <!-- ==================== LABS ==================== -->
           <div x-show="currentPage === 'labs'" x-data="labsPage()" x-init="load()">
             <div class="grid grid-2">
-              <template x-for="lab in items" :key="lab.id">
-                <div class="card" style="padding:1.25rem">
-                  <div class="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 style="font-weight:700;font-size:1rem" x-text="lab.name"></h3>
-                      <p class="text-sm text-gray" x-text="lab.building"></p>
-                    </div>
-                    <span class="badge badge-working" x-text="lab.equipment_count + ' units'"></span>
+              <template x-for="(lab, idx) in items" :key="lab.id">
+                <div class="card lab-card">
+                  <div class="lab-card-icon" :class="['blue','green','orange','blue'][idx % 4]">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M13 21V3l6 4v14"/></svg>
                   </div>
-                  <p class="text-sm text-gray" x-text="lab.description"></p>
-                  <div class="mt-4 text-xs text-gray">Capacity: <span x-text="lab.capacity"></span> units</div>
+                  <div class="lab-card-title" x-text="lab.name"></div>
+                  <div class="lab-card-subtitle" x-text="lab.building"></div>
+                  <div class="lab-card-desc" x-text="lab.description"></div>
+                  <div class="lab-card-meta">
+                    <span class="text-xs text-gray">Capacity: <strong x-text="lab.capacity"></strong> units</span>
+                    <span class="badge badge-working" x-text="lab.equipment_count + ' assets'"></span>
+                  </div>
                 </div>
               </template>
             </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -730,42 +783,24 @@
         loginLoading: false,
 
         get pageTitle() {
-          const titles = {
-            dashboard: 'Dashboard',
-            equipment: 'Equipment Inventory',
-            tickets: 'Maintenance Tickets',
-            maintenance: 'Maintenance Logs',
-            labs: 'Laboratories'
-          };
+          const titles = { dashboard: 'Dashboard', equipment: 'Equipment Inventory', tickets: 'Maintenance Tickets', maintenance: 'Maintenance Logs', labs: 'Laboratories' };
           return titles[this.currentPage] || 'Dashboard';
-        },
-
-        get pageSubtitle() {
-          return 'Cabiao Senior High School';
         },
 
         init() {
           const hash = window.location.hash.replace('#/', '') || 'dashboard';
+          if (!this.loggedIn) { this.currentPage = 'login'; return; }
           this.currentPage = hash;
-
           window.addEventListener('hashchange', () => {
-            const page = window.location.hash.replace('#/', '') || 'dashboard';
-            this.currentPage = page;
+            this.currentPage = window.location.hash.replace('#/', '') || 'dashboard';
           });
-
-          if (!this.loggedIn) {
-            window.location.hash = '#/login';
-          }
         },
 
         async login() {
           this.loginError = '';
           this.loginLoading = true;
           try {
-            const data = await API.post('/auth/login', {
-              email: this.loginEmail,
-              password: this.loginPassword
-            });
+            const data = await API.post('/auth/login', { email: this.loginEmail, password: this.loginPassword });
             API.setAuth(data.token, data.user);
             this.user = data.user;
             this.loggedIn = true;
@@ -797,30 +832,19 @@
       return {
         stats: {},
         async load() {
-          try {
-            this.stats = await API.get('/equipment/stats');
-          } catch (err) { console.error(err); }
+          try { this.stats = await API.get('/equipment/stats'); } catch (err) { console.error(err); }
         }
       };
     }
 
     function equipmentPage() {
       return {
-        items: [],
-        labs: [],
-        categories: [],
-        filterLab: '',
-        filterStatus: '',
-        searchQuery: '',
-        currentPageNum: 1,
-        totalPages: 1,
-        showAddModal: false,
-        showEditModal: false,
-        showViewModal: false,
-        viewingItem: null,
-        saving: false,
-        form: {},
-        user: API.user,
+        items: [], labs: [], categories: [],
+        filterLab: '', filterStatus: '', searchQuery: '',
+        currentPageNum: 1, totalPages: 1,
+        showAddModal: false, showEditModal: false, showViewModal: false,
+        viewingItem: null, saving: false,
+        form: {}, user: API.user,
 
         async load() {
           try {
@@ -829,22 +853,14 @@
             if (this.filterStatus) params.set('status', this.filterStatus);
             if (this.searchQuery) params.set('search', this.searchQuery);
             params.set('page', this.currentPageNum);
-
             const data = await API.get(`/equipment?${params}`);
             this.items = data.items;
             this.totalPages = data.pages;
           } catch (err) { console.error(err); }
         },
 
-        async initDropdowns() {
-          [this.labs, this.categories] = await Promise.all([
-            API.get('/labs'),
-            API.get('/categories')
-          ]);
-        },
-
-        async init() {
-          await this.initDropdowns();
+        async initPage() {
+          [this.labs, this.categories] = await Promise.all([API.get('/labs'), API.get('/categories')]);
           await this.load();
         },
 
@@ -852,73 +868,41 @@
           this.form = { asset_tag: '', serial_number: '', category_id: '', brand: '', model: '', specifications: '', laboratory_id: '', status: 'working', date_acquired: '', unit_cost: 0, remarks: '' };
         },
 
-        editItem(item) {
-          this.form = { ...item, category_id: item.category_id || '', laboratory_id: item.laboratory_id || '' };
-          this.showEditModal = true;
-        },
+        editItem(item) { this.form = { ...item, category_id: item.category_id || '', laboratory_id: item.laboratory_id || '' }; this.showEditModal = true; },
 
         async viewItem(item) {
-          try {
-            this.viewingItem = await API.get(`/equipment/${item.id}`);
-            this.showViewModal = true;
-          } catch (err) { showToast(err.message, 'error'); }
+          try { this.viewingItem = await API.get(`/equipment/${item.id}`); this.showViewModal = true; } catch (err) { showToast(err.message, 'error'); }
         },
 
         async saveItem() {
           this.saving = true;
           try {
-            if (this.showEditModal) {
-              await API.put(`/equipment/${this.form.id}`, this.form);
-              showToast('Equipment updated successfully');
-            } else {
-              await API.post('/equipment', this.form);
-              showToast('Equipment added successfully');
-            }
-            this.showAddModal = false;
-            this.showEditModal = false;
+            if (this.showEditModal) { await API.put(`/equipment/${this.form.id}`, this.form); showToast('Equipment updated'); }
+            else { await API.post('/equipment', this.form); showToast('Equipment added'); }
+            this.showAddModal = false; this.showEditModal = false;
             await this.load();
-          } catch (err) {
-            showToast(err.message, 'error');
-          } finally { this.saving = false; }
+          } catch (err) { showToast(err.message, 'error'); } finally { this.saving = false; }
         },
 
         async deleteItem(item) {
-          if (!confirm(`Delete ${item.asset_tag}? This cannot be undone.`)) return;
-          try {
-            await API.delete(`/equipment/${item.id}`);
-            showToast('Equipment deleted');
-            await this.load();
-          } catch (err) { showToast(err.message, 'error'); }
+          if (!confirm(`Delete ${item.asset_tag}?`)) return;
+          try { await API.delete(`/equipment/${item.id}`); showToast('Equipment deleted'); await this.load(); } catch (err) { showToast(err.message, 'error'); }
         },
 
-        exportCSV() {
-          const params = this.filterLab ? `?laboratory_id=${this.filterLab}` : '';
-          window.open(`/api/equipment/export/csv${params}`, '_blank');
-        },
-
-        exportPDF() {
-          const params = this.filterLab ? `?laboratory_id=${this.filterLab}` : '';
-          window.open(`/api/equipment/export/pdf${params}`, '_blank');
-        }
+        exportCSV() { const p = this.filterLab ? `?laboratory_id=${this.filterLab}` : ''; window.open(`/api/equipment/export/csv${p}`, '_blank'); },
+        exportPDF() { const p = this.filterLab ? `?laboratory_id=${this.filterLab}` : ''; window.open(`/api/equipment/export/pdf${p}`, '_blank'); }
       };
     }
 
     function ticketsPage() {
       return {
-        items: [],
-        labs: [],
-        technicians: [],
-        filterStatus: '',
-        filterPriority: '',
-        showAddModal: false,
-        showEditModal: false,
-        showViewModal: false,
-        viewingItem: null,
-        saving: false,
+        items: [], labs: [], technicians: [],
+        filterStatus: '', filterPriority: '',
+        showAddModal: false, showEditModal: false, showViewModal: false,
+        viewingItem: null, saving: false,
         form: { title: '', description: '', priority: 'medium', laboratory_id: '', equipment_id: '' },
         editForm: { status: '', assigned_to: '', resolution_notes: '' },
-        labEquipment: [],
-        user: API.user,
+        labEquipment: [], user: API.user, editingTicket: null,
 
         async load() {
           try {
@@ -930,102 +914,52 @@
           } catch (err) { console.error(err); }
         },
 
-        async initDropdowns() {
+        async initPage() {
           [this.labs, this.technicians] = await Promise.all([
             API.get('/labs'),
-            API.get('/auth/users').then(users => users.filter(u => u.role === 'technician'))
+            API.get('/auth/users').then(u => u.filter(x => x.role === 'technician'))
           ]);
-        },
-
-        async init() {
-          await this.initDropdowns();
           await this.load();
         },
 
         async loadLabEquipment() {
           if (!this.form.laboratory_id) { this.labEquipment = []; return; }
-          try {
-            const data = await API.get(`/equipment?laboratory_id=${this.form.laboratory_id}&limit=200`);
-            this.labEquipment = data.items;
-          } catch (err) { this.labEquipment = []; }
+          try { const d = await API.get(`/equipment?laboratory_id=${this.form.laboratory_id}&limit=200`); this.labEquipment = d.items; } catch(e) { this.labEquipment = []; }
         },
 
-        async viewTicket(t) {
-          try {
-            this.viewingItem = await API.get(`/tickets/${t.id}`);
-            this.showViewModal = true;
-          } catch (err) { showToast(err.message, 'error'); }
-        },
-
-        editTicket(t) {
-          this.editingTicket = t;
-          this.editForm = { status: t.status, assigned_to: t.assigned_to || '', resolution_notes: t.resolution_notes || '' };
-          this.showEditModal = true;
-        },
+        async viewTicket(t) { try { this.viewingItem = await API.get(`/tickets/${t.id}`); this.showViewModal = true; } catch(err) { showToast(err.message, 'error'); } },
+        editTicket(t) { this.editingTicket = t; this.editForm = { status: t.status, assigned_to: t.assigned_to || '', resolution_notes: t.resolution_notes || '' }; this.showEditModal = true; },
 
         async createTicket() {
           this.saving = true;
-          try {
-            await API.post('/tickets', this.form);
-            showToast('Ticket created successfully');
-            this.showAddModal = false;
-            this.form = { title: '', description: '', priority: 'medium', laboratory_id: '', equipment_id: '' };
-            await this.load();
-          } catch (err) { showToast(err.message, 'error'); }
-          finally { this.saving = false; }
+          try { await API.post('/tickets', this.form); showToast('Ticket created'); this.showAddModal = false; this.form = { title: '', description: '', priority: 'medium', laboratory_id: '', equipment_id: '' }; await this.load(); } catch(err) { showToast(err.message, 'error'); } finally { this.saving = false; }
         },
 
         async updateTicket() {
           this.saving = true;
-          try {
-            await API.put(`/tickets/${this.editingTicket.id}`, this.editForm);
-            showToast('Ticket updated');
-            this.showEditModal = false;
-            await this.load();
-          } catch (err) { showToast(err.message, 'error'); }
-          finally { this.saving = false; }
+          try { await API.put(`/tickets/${this.editingTicket.id}`, this.editForm); showToast('Ticket updated'); this.showEditModal = false; await this.load(); } catch(err) { showToast(err.message, 'error'); } finally { this.saving = false; }
         }
       };
     }
 
     function maintenancePage() {
       return {
-        items: [],
-        allEquipment: [],
-        filterType: '',
-        showAddModal: false,
-        saving: false,
+        items: [], allEquipment: [], filterType: '',
+        showAddModal: false, saving: false,
         form: { equipment_id: '', maintenance_type: 'repair', description: '', parts_replaced: '', cost: 0, maintenance_date: new Date().toISOString().split('T')[0] },
 
         async load() {
-          try {
-            const params = this.filterType ? `?maintenance_type=${this.filterType}` : '';
-            this.items = await API.get(`/maintenance${params}`);
-          } catch (err) { console.error(err); }
+          try { const p = this.filterType ? `?maintenance_type=${this.filterType}` : ''; this.items = await API.get(`/maintenance${p}`); } catch(err) { console.error(err); }
         },
 
-        async loadEquipment() {
-          try {
-            const data = await API.get('/equipment?limit=500');
-            this.allEquipment = data.items;
-          } catch (err) { console.error(err); }
-        },
-
-        async init() {
-          await this.loadEquipment();
+        async initPage() {
+          try { const d = await API.get('/equipment?limit=500'); this.allEquipment = d.items; } catch(e) {}
           await this.load();
         },
 
         async saveLog() {
           this.saving = true;
-          try {
-            await API.post('/maintenance', this.form);
-            showToast('Maintenance log added');
-            this.showAddModal = false;
-            this.form = { equipment_id: '', maintenance_type: 'repair', description: '', parts_replaced: '', cost: 0, maintenance_date: new Date().toISOString().split('T')[0] };
-            await this.load();
-          } catch (err) { showToast(err.message, 'error'); }
-          finally { this.saving = false; }
+          try { await API.post('/maintenance', this.form); showToast('Log added'); this.showAddModal = false; this.form = { equipment_id: '', maintenance_type: 'repair', description: '', parts_replaced: '', cost: 0, maintenance_date: new Date().toISOString().split('T')[0] }; await this.load(); } catch(err) { showToast(err.message, 'error'); } finally { this.saving = false; }
         }
       };
     }
@@ -1033,9 +967,7 @@
     function labsPage() {
       return {
         items: [],
-        async load() {
-          try { this.items = await API.get('/labs'); } catch (err) { console.error(err); }
-        }
+        async load() { try { this.items = await API.get('/labs'); } catch(err) { console.error(err); } }
       };
     }
   </script>
