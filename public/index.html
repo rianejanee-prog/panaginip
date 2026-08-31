@@ -750,7 +750,7 @@
             <div class="grid grid-2">
               <template x-for="(lab, idx) in items" :key="lab.id">
                 <div class="card lab-card">
-                  <div class="lab-card-icon" :class="['blue','green','orange','blue'][idx % 4]">
+                  <div class="lab-card-icon" :class="['blue','green','orange','purple'][idx % 4]">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M13 21V3l6 4v14"/></svg>
                   </div>
                   <div class="lab-card-title" x-text="lab.name"></div>
